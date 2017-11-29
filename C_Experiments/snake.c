@@ -91,15 +91,15 @@ static int open_evdev(const char *dev_name)
 
 		snprintf(fname, sizeof(fname),
 			 "%s/%s", DEV_INPUT_EVENT, namelist[i]->d_name);
-		// Try to print out the device list ... ??? 
-		fprintf(stderr, "\ndevice found: %s/%s", DEV_INPUT_EVENT, namelist[i]->d_name);
-		// -----	 
 		fd = open(fname, O_RDONLY);
 		if (fd < 0)
 			continue;
 		ioctl(fd, EVIOCGNAME(sizeof(name)), name);
-		if (strcmp(dev_name, name) == 0)
-			break;
+		// tmp  Try to print out the device list ... ??? 
+		fprintf(stderr, "\ndevice found: %s", name);
+		// -----	 
+		// tmp if (strcmp(dev_name, name) == 0)   // if device found is joystick stop looking
+		// tmp 	break;
 		close(fd);
 	}
 
