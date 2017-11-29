@@ -75,7 +75,7 @@ static int is_framebuffer_device(const struct dirent *dir)
 static int open_evdev(const char *dev_name)
 {
 	//  tmp 
-	printf("function: open_evdev");
+	fprintf(stderr, "function: open_evdev");
 	struct dirent **namelist;
 	int i, ndev;
 	int fd = -1;
