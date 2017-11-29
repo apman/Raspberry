@@ -289,7 +289,7 @@ void handle_events(int evfd)
 int main(int argc, char* args[])
 {
 	//  tmp 
-	printf("function: main");
+	fprintf(stderr, "function: main");
 
 	int ret = 0;
 	int fbfd = 0;
