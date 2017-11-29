@@ -74,6 +74,8 @@ static int is_framebuffer_device(const struct dirent *dir)
 
 static int open_evdev(const char *dev_name)
 {
+	//  tmp 
+	printf("function: open_evdev");
 	struct dirent **namelist;
 	int i, ndev;
 	int fd = -1;
@@ -286,6 +288,9 @@ void handle_events(int evfd)
 
 int main(int argc, char* args[])
 {
+	//  tmp 
+	printf("function: main");
+
 	int ret = 0;
 	int fbfd = 0;
 	struct pollfd evpoll = {
