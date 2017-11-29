@@ -266,7 +266,7 @@ void handle_events(int evfd)
 
 	rd = read(evfd, ev, sizeof(struct input_event) * 64);
 	if (rd < (int) sizeof(struct input_event)) {
-		fprintf(stderr, "expected %d bytes, got %d\n",
+		// tmp  fprintf(stderr, "expected %d bytes, got %d\n",
 		        (int) sizeof(struct input_event), rd);
 		return;
 	}
