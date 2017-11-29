@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <fcntl.h>
+#include <unistd.h>   // needed for system calls close(), read(), usleep()
 #include <linux/fb.h>
 #include <sys/mman.h>
 #include <sys/ioctl.h>
@@ -18,6 +19,15 @@
 
 #include <linux/input.h>
 #include <linux/fb.h>
+
+/* -------------------------------------------------------------------- 
+   FUNCTION PROTOTYPES 
+*/
+
+
+/* -------------------------------------------------------------------- */
+   
+
 
 enum direction_t{
 	UP,
