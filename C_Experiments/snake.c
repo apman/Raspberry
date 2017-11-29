@@ -18,14 +18,6 @@
 #include <string.h>
 
 #include <linux/input.h>
-#include <linux/fb.h>
-
-/* -------------------------------------------------------------------- 
-   FUNCTION PROTOTYPES 
-*/
-
-
-/* -------------------------------------------------------------------- */
    
 
 
@@ -97,6 +89,10 @@ static int open_evdev(const char *dev_name)
 
 		snprintf(fname, sizeof(fname),
 			 "%s/%s", DEV_INPUT_EVENT, namelist[i]->d_name);
+		// Try to print out the device list ... ??? 
+		printf(fname, sizeof(fname),
+			 "%s/%s", DEV_INPUT_EVENT, namelist[i]->d_name);
+		// -----	 
 		fd = open(fname, O_RDONLY);
 		if (fd < 0)
 			continue;
@@ -274,13 +270,13 @@ void handle_events(int evfd)
 		return;
 	}
 	for (i = 0; i < rd / sizeof(struct input_event); i++) {
-		if (ev->type != EV_KEY)
-			continue;
-		if (ev->value != 1)
-			continue;
+		if (ev->type != EV_KEY)  // event type not a key or button
+			continue;    // jump to next round in the for-loop
+		if (ev->value != 1)  // 1 = key pressed, 0 = released
+			continue;   
 		switch (ev->code) {
-			case KEY_ENTER:
-				running = 0;
+			case KEY_ENTER:  // ???  i.e. press the joystick down
+				running = 0;  // stop the game 
 				break;
 			default:
 				change_dir(ev->code);
