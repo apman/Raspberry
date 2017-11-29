@@ -75,7 +75,7 @@ static int is_framebuffer_device(const struct dirent *dir)
 static int open_evdev(const char *dev_name)
 {
 	//  tmp 
-	fprintf(stderr, "function: open_evdev");
+	fprintf(stderr, "\nfunction: open_evdev");
 	struct dirent **namelist;
 	int i, ndev;
 	int fd = -1;
@@ -92,8 +92,7 @@ static int open_evdev(const char *dev_name)
 		snprintf(fname, sizeof(fname),
 			 "%s/%s", DEV_INPUT_EVENT, namelist[i]->d_name);
 		// Try to print out the device list ... ??? 
-		printf(fname, sizeof(fname),
-			 "%s/%s", DEV_INPUT_EVENT, namelist[i]->d_name);
+		fprintf(stderr, "\ndevice found: %s/%s", DEV_INPUT_EVENT, namelist[i]->d_name);
 		// -----	 
 		fd = open(fname, O_RDONLY);
 		if (fd < 0)
@@ -288,9 +287,6 @@ void handle_events(int evfd)
 
 int main(int argc, char* args[])
 {
-	//  tmp 
-	fprintf(stderr, "function: main");
-
 	int ret = 0;
 	int fbfd = 0;
 	struct pollfd evpoll = {
