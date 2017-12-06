@@ -88,7 +88,7 @@ static int open_evdev(const char *dev_name)
 
 	for (i = 0; i < ndev; i++)
 	{
-		fprintf(stderr, "\nLook for device: %d\n", ndev);
+		fprintf(stderr, "\n\nLook for device: %d", ndev);
 		char fname[64];
 		char name[256];
 
@@ -99,11 +99,9 @@ static int open_evdev(const char *dev_name)
 		if (fd < 0)
 			continue;
 		ioctl(fd, EVIOCGNAME(sizeof(name)), name);
-		// tmp  Try to print out the device list ... ??? 
 		fprintf(stderr, "\ndevice found: %s", name);
-		// -----	 
-		// tmp if (strcmp(dev_name, name) == 0)   // if device found is joystick stop looking
-		// tmp 	break;
+		if (strcmp(dev_name, name) == 0)   // if device found is joystick stop looking
+		break;
 		close(fd);
 	}
 
@@ -126,7 +124,7 @@ static int open_fbdev(const char *dev_name)
 
 	for (i = 0; i < ndev; i++)
 	{
-		fprintf(stderr, "\nLook for fb device: %d\n", ndev);
+		fprintf(stderr, "\n\nLook for fb device: %d", ndev);
 		char fname[64];
 		char name[256];
 
@@ -137,7 +135,7 @@ static int open_fbdev(const char *dev_name)
 		if (fd < 0)
 			continue;
 		ioctl(fd, FBIOGET_FSCREENINFO, &fix_info);
-		fprintf(stderr, "\ndevice found: %s", name);
+		fprintf(stderr, "\ndevice found: %s", fix_info.id);
 		if (strcmp(dev_name, fix_info.id) == 0)
 			break;
 		close(fd);
@@ -273,8 +271,8 @@ void handle_events(int evfd)
 
 	rd = read(evfd, ev, sizeof(struct input_event) * 64);
 	if (rd < (int) sizeof(struct input_event)) {
-		// tmp  fprintf(stderr, "expected %d bytes, got %d\n",
-		//        (int) sizeof(struct input_event), rd);
+		fprintf(stderr, "expected %d bytes, got %d\n",
+		(int) sizeof(struct input_event), rd);
 		return;
 	}
 	for (i = 0; i < rd / sizeof(struct input_event); i++) {
@@ -283,7 +281,7 @@ void handle_events(int evfd)
 		if (ev->value != 1)  // 1 = key pressed, 0 = released
 			continue;   
 		switch (ev->code) {
-			case KEY_ENTER:  // ???  i.e. press the joystick down
+			case KEY_ENTER:  // i.e. press the joystick down
 				running = 0;  // stop the game 
 				break;
 			default:
@@ -309,7 +307,7 @@ int main(int argc, char* args[])
 		return evpoll.fd;
 	}
 
-	// open frame buffer (probabaly the LED matrix)
+	// open frame buffer (probabaly the LED matrix (??))
 	fbfd = open_fbdev("RPi-Sense FB");
 	if (fbfd <= 0) {
 		ret = fbfd;
