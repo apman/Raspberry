@@ -149,7 +149,7 @@ void render()
 {
 	struct segment_t *seg_i;
 	memset(fb, 0, 128);
-	fb->pixel[apple.x][apple.y]=0xF800;
+	//fb->pixel[apple.x][apple.y]=0xF800;
 	for(seg_i = snake.tail; seg_i->next; seg_i=seg_i->next) {
 		fb->pixel[seg_i->x][seg_i->y] = 0x7E0;
 	}
@@ -200,21 +200,21 @@ void game_logic(void)
 	// }
 	switch (snake.heading) {
 		case LEFT:
-			seg_i->y--;
+			snake.tail->y--;
 			break;
 		case DOWN:
-			seg_i->x++;
+			snake.tail->x++;
 			break;
 		case RIGHT:
-			seg_i->y++;
+			snake.tail->y++;
 			break;
 		case UP:
-			seg_i->x--;
+			snake.tail->x--;
 			break;
 	}
 }
 
-void addToPath() {
+void addToPath(dir direction_t) {
 		struct segment_t *new_tail;
 
 		new_tail = malloc(sizeof(struct segment_t));
@@ -227,6 +227,7 @@ void addToPath() {
 		new_tail->y=snake.tail->y;
 		new_tail->next=snake.tail;
 		snake.tail = new_tail;	
+		
 }
 
 void reset(void)
@@ -245,30 +246,30 @@ void reset(void)
 	snake.tail->y=rand() % 8;
 //	apple.x = rand() % 8;
 //	apple.y = rand() % 8;
-	snake.heading = NONE;
+	// snake.heading = NONE;
 }
 
-void change_dir(unsigned int code)
-{
-	switch (code) {
-		case KEY_UP:
-			if (snake.heading != DOWN)
-				snake.heading = UP;
-			break;
-		case KEY_RIGHT:
-			if (snake.heading != LEFT)
-				snake.heading = RIGHT;
-			break;
-		case KEY_DOWN:
-			if (snake.heading != UP)
-				snake.heading = DOWN;
-			break;
-		case KEY_LEFT:
-			if (snake.heading != RIGHT)
-				snake.heading = LEFT;
-			break;
-	}
-}
+// void change_dir(unsigned int code)
+// {
+// 	switch (code) {
+// 		case KEY_UP:
+// 			if (snake.heading != DOWN)
+// 				snake.heading = UP;
+// 			break;
+// 		case KEY_RIGHT:
+// 			if (snake.heading != LEFT)
+// 				snake.heading = RIGHT;
+// 			break;
+// 		case KEY_DOWN:
+// 			if (snake.heading != UP)
+// 				snake.heading = DOWN;
+// 			break;
+// 		case KEY_LEFT:
+// 			if (snake.heading != RIGHT)
+// 				snake.heading = LEFT;
+// 			break;
+// 	}
+// }
 
 void handle_events(int evfd)
 {
@@ -290,8 +291,8 @@ void handle_events(int evfd)
 			case KEY_ENTER:  // i.e. press the joystick down
 				running = 0;  // stop the game 
 				break;
-			default:
-				change_dir(ev->code);
+			// default:
+			// 	change_dir(ev->code);
 		}
 	}
 }
