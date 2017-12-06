@@ -200,21 +200,25 @@ void game_logic(void)
 	// }
 	switch (snake.heading) {
 		case LEFT:
+		  addToPath();
 			snake.tail->y--;
 			break;
 		case DOWN:
+		  addToPath();
 			snake.tail->x++;
 			break;
 		case RIGHT:
+		  addToPath();
 			snake.tail->y++;
 			break;
 		case UP:
+		  addToPath();
 			snake.tail->x--;
 			break;
 	}
 }
 
-void addToPath(dir direction_t) {
+void addToPath() {
 		struct segment_t *new_tail;
 
 		new_tail = malloc(sizeof(struct segment_t));
