@@ -183,6 +183,23 @@ int check_collision(int appleCheck)
 	return 0;
 }
 
+void addToPath() {
+		struct segment_t *new_tail;
+
+		new_tail = malloc(sizeof(struct segment_t));
+		if (!new_tail) {
+			fprintf(stderr, "Ran out of memory.\n");
+			running = 0;
+			return;
+		}
+		new_tail->x=snake.tail->x;
+		new_tail->y=snake.tail->y;
+		new_tail->next=snake.tail;
+		snake.tail = new_tail;	
+		
+}
+
+
 void game_logic(void)
 {
 	struct segment_t *seg_i;
@@ -218,21 +235,6 @@ void game_logic(void)
 	}
 }
 
-void addToPath() {
-		struct segment_t *new_tail;
-
-		new_tail = malloc(sizeof(struct segment_t));
-		if (!new_tail) {
-			fprintf(stderr, "Ran out of memory.\n");
-			running = 0;
-			return;
-		}
-		new_tail->x=snake.tail->x;
-		new_tail->y=snake.tail->y;
-		new_tail->next=snake.tail;
-		snake.tail = new_tail;	
-		
-}
 
 void reset(void)
 {
