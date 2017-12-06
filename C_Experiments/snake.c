@@ -72,6 +72,8 @@ static int is_framebuffer_device(const struct dirent *dir)
 		       strlen(FB_DEV_NAME)-1) == 0;
 }
 
+/* Looks for input devices in /dev/input 
+   (not all input is managed in /dev/input/ (e.g. microphones), so I guess sensors aren't either) */
 static int open_evdev(const char *dev_name)
 {
 	//  tmp 
@@ -86,11 +88,13 @@ static int open_evdev(const char *dev_name)
 
 	for (i = 0; i < ndev; i++)
 	{
+		fprintf(stderr, "\nLook for device: %d\n", ndev);
 		char fname[64];
 		char name[256];
 
 		snprintf(fname, sizeof(fname),
 			 "%s/%s", DEV_INPUT_EVENT, namelist[i]->d_name);
+		fprintf(stderr, "\ndevice file: %s", fname);
 		fd = open(fname, O_RDONLY);
 		if (fd < 0)
 			continue;
@@ -122,15 +126,18 @@ static int open_fbdev(const char *dev_name)
 
 	for (i = 0; i < ndev; i++)
 	{
+		fprintf(stderr, "\nLook for fb device: %d\n", ndev);
 		char fname[64];
 		char name[256];
 
 		snprintf(fname, sizeof(fname),
 			 "%s/%s", DEV_FB, namelist[i]->d_name);
+		fprintf(stderr, "\nfb device file: %s", fname);
 		fd = open(fname, O_RDWR);
 		if (fd < 0)
 			continue;
 		ioctl(fd, FBIOGET_FSCREENINFO, &fix_info);
+		fprintf(stderr, "\ndevice found: %s", name);
 		if (strcmp(dev_name, fix_info.id) == 0)
 			break;
 		close(fd);
@@ -287,26 +294,27 @@ void handle_events(int evfd)
 
 int main(int argc, char* args[])
 {
-	int ret = 0;
+	int ret = 0;  // file handle(?) for framebuffer ... (whatever that is)
 	int fbfd = 0;
 	struct pollfd evpoll = {
 		.events = POLLIN,
 	};
 	
-	srand (time(NULL));
+	srand (time(NULL));  // Seeds the pseudo-random number generator used by rand() with the value seed
 
+	// connect to the joystick
 	evpoll.fd = open_evdev("Raspberry Pi Sense HAT Joystick");
 	if (evpoll.fd < 0) {
-		fprintf(stderr, "Event device not found.\n");
+		fprintf(stderr, "Event device 'Joystick' not found.\n");
 		return evpoll.fd;
 	}
 
+	// open frame buffer (probabaly the LED matrix)
 	fbfd = open_fbdev("RPi-Sense FB");
 	if (fbfd <= 0) {
 		ret = fbfd;
 		printf("Error: cannot open framebuffer device.\n");
 		goto err_ev; 
-		
 	}
 	
 	fb = mmap(0, 128, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);
