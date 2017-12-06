@@ -215,24 +215,24 @@ void game_logic(void)
 		// 	apple.y = rand() % 8;
 		// }
 	// }
-	switch (snake.heading) {
-		case LEFT:
-		  addToPath();
-			snake.tail->y--;
-			break;
-		case DOWN:
-		  addToPath();
-			snake.tail->x++;
-			break;
-		case RIGHT:
-		  addToPath();
-			snake.tail->y++;
-			break;
-		case UP:
-		  addToPath();
-			snake.tail->x--;
-			break;
-	}
+	// switch (snake.heading) {
+	// 	case LEFT:
+	// 	  addToPath();
+	// 		snake.tail->y--;
+	// 		break;
+	// 	case DOWN:
+	// 	  addToPath();
+	// 		snake.tail->x++;
+	// 		break;
+	// 	case RIGHT:
+	// 	  addToPath();
+	// 		snake.tail->y++;
+	// 		break;
+	// 	case UP:
+	// 	  addToPath();
+	// 		snake.tail->x--;
+	// 		break;
+	// }
 }
 
 
@@ -255,27 +255,27 @@ void reset(void)
 	// snake.heading = NONE;
 }
 
-// void change_dir(unsigned int code)
-// {
-// 	switch (code) {
-// 		case KEY_UP:
-// 			if (snake.heading != DOWN)
-// 				snake.heading = UP;
-// 			break;
-// 		case KEY_RIGHT:
-// 			if (snake.heading != LEFT)
-// 				snake.heading = RIGHT;
-// 			break;
-// 		case KEY_DOWN:
-// 			if (snake.heading != UP)
-// 				snake.heading = DOWN;
-// 			break;
-// 		case KEY_LEFT:
-// 			if (snake.heading != RIGHT)
-// 				snake.heading = LEFT;
-// 			break;
-// 	}
-// }
+void change_dir(unsigned int code)
+{
+	switch (code) {
+		case KEY_UP:
+		  addToPath();
+			snake.tail->x--;
+			break;
+		case KEY_RIGHT:
+		  addToPath();
+			snake.tail->y++;
+			break;
+		case KEY_DOWN:
+		  addToPath();
+			snake.tail->x++;
+			break;
+		case KEY_LEFT:
+		  addToPath();
+			snake.tail->y--;
+			break;
+	}
+}
 
 void handle_events(int evfd)
 {
@@ -297,8 +297,8 @@ void handle_events(int evfd)
 			case KEY_ENTER:  // i.e. press the joystick down
 				running = 0;  // stop the game 
 				break;
-			// default:
-			// 	change_dir(ev->code);
+			default:
+			change_dir(ev->code);
 		}
 	}
 }
