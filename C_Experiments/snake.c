@@ -76,8 +76,6 @@ static int is_framebuffer_device(const struct dirent *dir)
    (not all input is managed in /dev/input/ (e.g. microphones), so I guess sensors aren't either) */
 static int open_evdev(const char *dev_name)
 {
-	//  tmp 
-	fprintf(stderr, "\nfunction: open_evdev");
 	struct dirent **namelist;
 	int i, ndev;
 	int fd = -1;
@@ -162,19 +160,22 @@ int check_collision(int appleCheck)
 {
 	struct segment_t *seg_i;
 
-	if (appleCheck) {
-		for (seg_i = snake.tail; seg_i; seg_i=seg_i->next) {
-			if (seg_i->x == apple.x && seg_i->y == apple.y)
-				return 1;
-			}
-		return 0;
-	}
+	// CHECKS FOR COLLISION WITH APPLE
+	// if (appleCheck) {  
+	// 	for (seg_i = snake.tail; seg_i; seg_i=seg_i->next) {
+	// 		if (seg_i->x == apple.x && seg_i->y == apple.y)
+	// 			return 1;
+	// 		}
+	// 	return 0;
+	// }
 
-	for(seg_i = snake.tail; seg_i->next; seg_i=seg_i->next) {
-		if (snake.head.x == seg_i->x && snake.head.y == seg_i->y)
-			return 1;
-	}
+	// CHECKS FOR PATH CROSSING
+	// for(seg_i = snake.tail; seg_i->next; seg_i=seg_i->next) {
+	// 	if (snake.head.x == seg_i->x && snake.head.y == seg_i->y)
+	// 		return 1;
+	// }
 
+  // CHECK IF PATH GOES OFF SCREEN
 	if (snake.head.x < 0 || snake.head.x > 7 ||
 	    snake.head.y < 0 || snake.head.y > 7) {
 		return 1;
@@ -185,28 +186,18 @@ int check_collision(int appleCheck)
 void game_logic(void)
 {
 	struct segment_t *seg_i;
-	struct segment_t *new_tail;
-	for(seg_i = snake.tail; seg_i->next; seg_i=seg_i->next) {
-		seg_i->x = seg_i->next->x;
-		seg_i->y = seg_i->next->y;
-	}
-	if (check_collision(1)) {
-		new_tail = malloc(sizeof(struct segment_t));
-		if (!new_tail) {
-			printf("Ran out of memory.\n");
-			running = 0;
-			return;
-		}
-		new_tail->x=snake.tail->x;
-		new_tail->y=snake.tail->y;
-		new_tail->next=snake.tail;
-		snake.tail = new_tail;
+	// MOVES THE SNAKE   //  TODO:  reuse for tracing the path
+	// for(seg_i = snake.tail; seg_i->next; seg_i=seg_i->next) {
+	// 	seg_i->x = seg_i->next->x;
+	// 	seg_i->y = seg_i->next->y;
+	// }
+	// if (check_collision(1)) {
 
-		while (check_collision(1)) {
-			apple.x = rand() % 8;
-			apple.y = rand() % 8;
-		}
-	}
+		// while (check_collision(1)) {
+		// 	apple.x = rand() % 8;
+		// 	apple.y = rand() % 8;
+		// }
+	// }
 	switch (snake.heading) {
 		case LEFT:
 			seg_i->y--;
@@ -223,6 +214,21 @@ void game_logic(void)
 	}
 }
 
+void addToPath() {
+		struct segment_t *new_tail;
+
+		new_tail = malloc(sizeof(struct segment_t));
+		if (!new_tail) {
+			fprintf(stderr, "Ran out of memory.\n");
+			running = 0;
+			return;
+		}
+		new_tail->x=snake.tail->x;
+		new_tail->y=snake.tail->y;
+		new_tail->next=snake.tail;
+		snake.tail = new_tail;	
+}
+
 void reset(void)
 {
 	struct segment_t *seg_i;
@@ -235,10 +241,10 @@ void reset(void)
 	}
 	snake.tail=seg_i;
 	snake.tail->next=NULL;
-	snake.tail->x=2;
-	snake.tail->y=3;
-	apple.x = rand() % 8;
-	apple.y = rand() % 8;
+	snake.tail->x=rand() % 8;
+	snake.tail->y=rand() % 8;
+//	apple.x = rand() % 8;
+//	apple.y = rand() % 8;
 	snake.heading = NONE;
 }
 
@@ -315,13 +321,17 @@ int main(int argc, char* args[])
 		goto err_ev; 
 	}
 	
+	/* On modern operating systems, it is possible to mmap (pronounced “em-map”) a file to a region of memory. 
+		 When this is done, the file can be accessed just like an array in the program. This is more efficient 
+		 than read or write, as only the regions of the file that a program actually accesses are loaded */
 	fb = mmap(0, 128, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);
 	if (!fb) {
 		ret = EXIT_FAILURE;
 		printf("Failed to mmap.\n");
 		goto err_fb;
 	}
-	memset(fb, 0, 128);
+
+	memset(fb, 0, 128);  // Sets the file buffer contents to 0 (128 is 64 * size_of char).
 
 	snake.tail = &snake.head;
 	reset();
