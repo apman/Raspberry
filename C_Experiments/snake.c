@@ -148,12 +148,12 @@ static int open_fbdev(const char *dev_name)
 void render()
 {
 	struct segment_t *seg_i;
-	memset(fb, 0xF00, 128);
+	memset(fb, 0xF000, 128);
 	//fb->pixel[apple.x][apple.y]=0xF800;
 	for(seg_i = snake.tail; seg_i->next; seg_i=seg_i->next) {
-		fb->pixel[seg_i->x][seg_i->y] = 0x0F0;
+		fb->pixel[seg_i->x][seg_i->y] = 0x0F00;
 	}
-	fb->pixel[seg_i->x][seg_i->y]=0x00F;
+	fb->pixel[seg_i->x][seg_i->y] = 0x00F0;
 }
 
 int check_collision(int appleCheck)
