@@ -253,7 +253,7 @@ void handle_events(int evfd)
 			(int) sizeof(struct input_event), rd);
 		return;
 	}
-	for (i = 0; i < rd / sizeof(struct input_event); i++) {
+	//for (i = 0; i < rd / sizeof(struct input_event); i++) {
 		if (ev->type != EV_KEY)  // event type not a key or button
 			continue;    // jump to next round in the for-loop
 		if (ev->value != 1)  // 1 = key pressed, 0 = released
@@ -264,9 +264,10 @@ void handle_events(int evfd)
 				break;
 			default:
 			change_dir(ev->code);
-			fprintf(stderr, "code = %d\n", ev->code);
+			fprintf(stderr, "code = %d\n", ev->code);  
+
 		}
-	}
+	// }
 }
 
 int main(int argc, char* args[])
