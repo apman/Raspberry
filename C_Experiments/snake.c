@@ -184,7 +184,7 @@ int check_collision(int appleCheck)
 }
 
 void addToPath() {
-		struct segment_t *new_tail;
+		struct segment_t * new_tail;
 
 		new_tail = malloc(sizeof(struct segment_t));
 		if (!new_tail) {
@@ -199,41 +199,6 @@ void addToPath() {
 		
 }
 
-
-void game_logic(void)
-{
-	struct segment_t *seg_i;
-	// MOVES THE SNAKE   //  TODO:  reuse for tracing the path
-	// for(seg_i = snake.tail; seg_i->next; seg_i=seg_i->next) {
-	// 	seg_i->x = seg_i->next->x;
-	// 	seg_i->y = seg_i->next->y;
-	// }
-	// if (check_collision(1)) {
-
-		// while (check_collision(1)) {
-		// 	apple.x = rand() % 8;
-		// 	apple.y = rand() % 8;
-		// }
-	// }
-	// switch (snake.heading) {
-	// 	case LEFT:
-	// 	  addToPath();
-	// 		snake.tail->y--;
-	// 		break;
-	// 	case DOWN:
-	// 	  addToPath();
-	// 		snake.tail->x++;
-	// 		break;
-	// 	case RIGHT:
-	// 	  addToPath();
-	// 		snake.tail->y++;
-	// 		break;
-	// 	case UP:
-	// 	  addToPath();
-	// 		snake.tail->x--;
-	// 		break;
-	// }
-}
 
 
 void reset(void)
@@ -285,7 +250,7 @@ void handle_events(int evfd)
 	rd = read(evfd, ev, sizeof(struct input_event) * 64);
 	if (rd < (int) sizeof(struct input_event)) {
 		fprintf(stderr, "expected %d bytes, got %d\n",
-		(int) sizeof(struct input_event), rd);
+			(int) sizeof(struct input_event), rd);
 		return;
 	}
 	for (i = 0; i < rd / sizeof(struct input_event); i++) {
@@ -299,14 +264,15 @@ void handle_events(int evfd)
 				break;
 			default:
 			change_dir(ev->code);
+			fprintf(stderr, "code = %d\n", ev->code);
 		}
 	}
 }
 
 int main(int argc, char* args[])
 {
-	int ret = 0;  // file handle(?) for framebuffer ... (whatever that is)
-	int fbfd = 0;
+	int ret = 0;   // return value
+	int fbfd = 0;   // file handle(?) for framebuffer ... (whatever that is)
 	struct pollfd evpoll = {
 		.events = POLLIN,
 	};
@@ -345,7 +311,6 @@ int main(int argc, char* args[])
 	while (running) {
 		while (poll(&evpoll, 1, 0) > 0)
 			handle_events(evpoll.fd);
-		game_logic();
 		if (check_collision(0)) {
 			reset();
 		}
