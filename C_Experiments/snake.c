@@ -33,12 +33,12 @@ struct segment_t {
 	int x;
 	int y;
 };
-struct snake_t {
+struct path_t {
 	struct segment_t head;
 	struct segment_t *tail;
 	enum direction_t heading;
 };
-struct apple_t {
+struct Point_t {
 	int x;
 	int y;
 };
@@ -50,12 +50,12 @@ struct fb_t {
 
 int running = 1;
 
-struct snake_t snake = {
+struct path_t path = {
 	{NULL, 4, 4},
 	NULL,
 	NONE,
 };
-struct apple_t apple = {
+struct Point_t MsRedRidingHood = {
 	4, 4,
 };
 
@@ -148,36 +148,20 @@ static int open_fbdev(const char *dev_name)
 void render()
 {
 	struct segment_t *seg_i;
-	memset(fb, 0xF000, 128);
-	//fb->pixel[apple.x][apple.y]=0xF800;
-	for(seg_i = snake.tail; seg_i->next; seg_i=seg_i->next) {
+	memset(fb, 0x00F0, 128);		// fill bg colour
+	for(seg_i = path.tail; seg_i->next; seg_i=seg_i->next) {
 		fb->pixel[seg_i->x][seg_i->y] = 0x0F00;
 	}
-	fb->pixel[seg_i->x][seg_i->y] = 0x00F0;
+	fb->pixel[seg_i->x][seg_i->y] = 0xF800;
 }
 
-int check_collision(int appleCheck)
+int check_collision()
 {
 	struct segment_t *seg_i;
 
-	// CHECKS FOR COLLISION WITH APPLE
-	// if (appleCheck) {  
-	// 	for (seg_i = snake.tail; seg_i; seg_i=seg_i->next) {
-	// 		if (seg_i->x == apple.x && seg_i->y == apple.y)
-	// 			return 1;
-	// 		}
-	// 	return 0;
-	// }
-
-	// CHECKS FOR PATH CROSSING
-	// for(seg_i = snake.tail; seg_i->next; seg_i=seg_i->next) {
-	// 	if (snake.head.x == seg_i->x && snake.head.y == seg_i->y)
-	// 		return 1;
-	// }
-
   // CHECK IF PATH GOES OFF SCREEN
-	if (snake.head.x < 0 || snake.head.x > 7 ||
-	    snake.head.y < 0 || snake.head.y > 7) {
+	if (path.head.x < 0 || path.head.x > 7 ||
+	    path.head.y < 0 || path.head.y > 7) {
 		return 1;
 	}
 	return 0;
@@ -192,10 +176,10 @@ void addToPath() {
 			running = 0;
 			return;
 		}
-		new_tail->x=snake.tail->x;
-		new_tail->y=snake.tail->y;
-		new_tail->next=snake.tail;
-		snake.tail = new_tail;	
+		new_tail->x=path.tail->x;
+		new_tail->y=path.tail->y;
+		new_tail->next=path.tail;
+		path.tail = new_tail;	
 		
 }
 
@@ -205,19 +189,17 @@ void reset(void)
 {
 	struct segment_t *seg_i;
 	struct segment_t *next_tail;
-	seg_i=snake.tail;
+	seg_i=path.tail;
 	while (seg_i->next) {
 		next_tail=seg_i->next;
 		free(seg_i);
 		seg_i=next_tail;
 	}
-	snake.tail=seg_i;
-	snake.tail->next=NULL;
-	snake.tail->x=rand() % 8;
-	snake.tail->y=rand() % 8;
-//	apple.x = rand() % 8;
-//	apple.y = rand() % 8;
-	// snake.heading = NONE;
+	path.tail=seg_i;
+	path.tail->next=NULL;
+	path.tail->x=rand() % 8;
+	path.tail->y=rand() % 8;
+	// path.heading = NONE;
 }
 
 void change_dir(unsigned int code)
@@ -225,19 +207,19 @@ void change_dir(unsigned int code)
 	switch (code) {
 		case KEY_UP:
 		  addToPath();
-			snake.tail->x--;
+			path.tail->x--;
 			break;
 		case KEY_RIGHT:
 		  addToPath();
-			snake.tail->y++;
+			path.tail->y++;
 			break;
 		case KEY_DOWN:
 		  addToPath();
-			snake.tail->x++;
+			path.tail->x++;
 			break;
 		case KEY_LEFT:
 		  addToPath();
-			snake.tail->y--;
+			path.tail->y--;
 			break;
 	}
 }
@@ -253,39 +235,24 @@ void handle_events(int evfd)
 			(int) sizeof(struct input_event), rd);
 		return;
 	}
-	//for (i = 0; i < rd / sizeof(struct input_event); i++) {
-		// if (ev->type != EV_KEY)  // event type not a key or button
-		// 	continue;    // jump to next round in the for-loop
-		// if (ev->value != 1)  // 1 = key pressed, 0 = released
-		// 	continue;   
-		// switch (ev->code) {
-		// 	case KEY_ENTER:  // i.e. press the joystick down
-		// 		running = 0;  // stop the game 
-		// 		break;
-		// 	default:
-		// 	change_dir(ev->code);
-		// 	fprintf(stderr, "code = %d\n", ev->code);  
-		// }
-	// }
-		if (ev->type != EV_KEY)  // event type not a key or button
-			return;    // jump to next round in the for-loop
-		if (ev->value != 1)  // 1 = key pressed, 0 = released
-			return;   
-		switch (ev->code) {
-			case KEY_ENTER:  // i.e. press the joystick down
-				running = 0;  // stop the game 
-				break;
-			default:
-			change_dir(ev->code);
-			fprintf(stderr, "code = %d\n", ev->code);  
-		}
-
+	if (ev->type != EV_KEY)  // event type not a key or button
+		return;    // jump to next round in the for-loop
+	if (ev->value != 1)  // 1 = key pressed, 0 = released
+		return;   
+	switch (ev->code) {
+		case KEY_ENTER:  // i.e. press the joystick down
+			running = 0;  // stop the game 
+			break;
+		default:
+		change_dir(ev->code);
+		fprintf(stderr, "code = %d\n", ev->code);  
+	}
 }
 
 int main(int argc, char* args[])
 {
 	int ret = 0;   // return value
-	int fbfd = 0;   // file handle(?) for framebuffer ... (whatever that is)
+	int fbfd = 0;   // file handle for framebuffer (i.e. LED matrix)
 	struct pollfd evpoll = {
 		.events = POLLIN,
 	};
@@ -299,7 +266,7 @@ int main(int argc, char* args[])
 		return evpoll.fd;
 	}
 
-	// open frame buffer (probabaly the LED matrix (??))
+	// open frame buffer (LED matrix)
 	fbfd = open_fbdev("RPi-Sense FB");
 	if (fbfd <= 0) {
 		ret = fbfd;
@@ -317,9 +284,10 @@ int main(int argc, char* args[])
 		goto err_fb;
 	}
 
-	memset(fb, 0, 128);  // Sets the file buffer contents to 0 (128 is 64 * size_of char).
+	// Sets the file buffer contents (and thereby the 8 x 8 LED grid) to 0.
+	memset(fb, 0, 128);  // (128 is 8 * 8 * size_of char)
 
-	snake.tail = &snake.head;
+	path.tail = &path.head;
 	reset();
 	while (running) {
 		while (poll(&evpoll, 1, 0) > 0)
