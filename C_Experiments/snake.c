@@ -148,7 +148,7 @@ static int open_fbdev(const char *dev_name)
 void render()
 {
 	struct segment_t *seg_i;
-	memset(fb, 0x00F0, 128);		// fill bg colour
+	// memset(fb, 0x00F0, 128);		// fill bg colour
 	for(seg_i = path.tail; seg_i->next; seg_i=seg_i->next) {
 		fb->pixel[seg_i->x][seg_i->y] = 0x0F00;
 	}
