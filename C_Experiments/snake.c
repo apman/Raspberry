@@ -145,14 +145,17 @@ static int open_fbdev(const char *dev_name)
 	return fd;
 }
 
+// 0x00F0 fuchsia
+// 0x0F00 green
+// 0xF800 red 
 void render()
 {
 	struct segment_t *seg_i;
 	// memset(fb, 0x00F0, 128);		// fill bg colour
 	for(seg_i = path.tail; seg_i->next; seg_i=seg_i->next) {
-		fb->pixel[seg_i->x][seg_i->y] = 0x0F00;
+		fb->pixel[seg_i->x][seg_i->y] = 0xFF00;
 	}
-	fb->pixel[seg_i->x][seg_i->y] = 0xF800;
+	fb->pixel[seg_i->x][seg_i->y] = 0x8800;
 }
 
 int check_collision()
@@ -197,7 +200,7 @@ void reset(void)
 	}
 	path.tail=seg_i;
 	path.tail->next=NULL;
-	path.tail->x=rand() % 8;
+	path.tail->x=0;
 	path.tail->y=rand() % 8;
 	// path.heading = NONE;
 }
