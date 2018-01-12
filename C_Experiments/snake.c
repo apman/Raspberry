@@ -139,7 +139,7 @@ static int open_fbdev(const char *dev_name)
 		if (fd < 0)
 			continue;
 		ioctl(fd, FBIOGET_FSCREENINFO, &fix_info);
-		fprintf(stderr, "\ndevice found: %s", fix_info.id);
+		fprintf(stderr, "\ndevice found: %s\n\n", fix_info.id);
 		if (strcmp(dev_name, fix_info.id) == 0)
 			break;
 		close(fd);
@@ -306,7 +306,7 @@ int main(int argc, char* args[])
 		goto err_fb;
 	}
 
-	//trailEnd = &path.head;
+	trailEnd = {NULL, 0, 0};
 	reset();
 	while (running) {
 		while (poll(&evpoll, 1, 0) > 0)
