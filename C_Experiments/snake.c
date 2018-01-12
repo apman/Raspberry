@@ -344,7 +344,7 @@ int main(int argc, char* args[])
 			// pop off the last added step
 			trailEnd = trailEnd->next;
 			free(trailEnd->prev);
-			trailEnd->prev = NULL
+			trailEnd->prev = NULL;
 			fprintf(stderr, "calling runAlongThePath.\n");
 			runAlongThePath();
 		}
