@@ -343,6 +343,8 @@ int main(int argc, char* args[])
 		if (check_collision()) {
 			// pop off the last added step
 			trailEnd = trailEnd->next;
+			free(trailEnd.previous);
+			trailEnd.previous = NULL
 			fprintf(stderr, "calling runAlongThePath.\n");
 			runAlongThePath();
 		}
