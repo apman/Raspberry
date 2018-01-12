@@ -159,93 +159,18 @@ static int open_fbdev(const char *dev_name)
 void render()
 {
 	struct segment_t *seg_i;
-	// memset(fb, 0x00F0, 128);		// fill bg colour
 	for(seg_i = path.tail; seg_i->next; seg_i=seg_i->next) {
-		fb->pixel[seg_i->x][seg_i->y] = 0x0FFF;
+		fb->pixel[seg_i->x][seg_i->y] = 0xFFF0;
 	}
-	fb->pixel[seg_i->x][seg_i->y] = 0xFF0F;
-	fb->pixel[7][0] = 0x6666;
-	fb->pixel[7][1] = 0x6660;
-	fb->pixel[7][2] = 0x6606;
-	fb->pixel[7][3] = 0x6066;
-	fb->pixel[7][4] = 0x6600;
-	fb->pixel[7][5] = 0x6006;
-	fb->pixel[7][6] = 0x6060;
-	fb->pixel[7][7] = 0x6000;
-
-	fb->pixel[6][0] = 0x0666;
-	fb->pixel[6][1] = 0x0660;
-	fb->pixel[6][2] = 0x0606;
-	fb->pixel[6][3] = 0x0066;
-	fb->pixel[6][4] = 0x0600;
-	fb->pixel[6][5] = 0x0006;
-	fb->pixel[6][6] = 0x0060;
-	fb->pixel[6][7] = 0x0000;
-
-	fb->pixel[5][0] = 0x6666;
-	fb->pixel[5][1] = 0x6660;
-	fb->pixel[5][2] = 0x6606;
-	fb->pixel[5][3] = 0x0666;
-	fb->pixel[5][4] = 0x6600;
-	fb->pixel[5][5] = 0x0606;
-	fb->pixel[5][6] = 0x0660;
-	fb->pixel[5][7] = 0x0600;
-
-	fb->pixel[4][0] = 0x6066;
-	fb->pixel[4][1] = 0x6060;
-	fb->pixel[4][2] = 0x6006;
-	fb->pixel[4][3] = 0x0066;
-	fb->pixel[4][4] = 0x6000;
-	fb->pixel[4][5] = 0x0006;
-	fb->pixel[4][6] = 0x0060;
-	fb->pixel[4][7] = 0x0000;
-
-	fb->pixel[3][0] = 0x6666;
-	fb->pixel[3][1] = 0x6660;
-	fb->pixel[3][2] = 0x6066;
-	fb->pixel[3][3] = 0x0666;
-	fb->pixel[3][4] = 0x6060;
-	fb->pixel[3][5] = 0x0066;
-	fb->pixel[3][6] = 0x0660;
-	fb->pixel[3][7] = 0x0060;
-
-	fb->pixel[2][0] = 0x6606;
-	fb->pixel[2][1] = 0x6600;
-	fb->pixel[2][2] = 0x6006;
-	fb->pixel[2][3] = 0x0606;
-	fb->pixel[2][4] = 0x6000;
-	fb->pixel[2][5] = 0x0006;
-	fb->pixel[2][6] = 0x0600;
-	fb->pixel[2][7] = 0x0000;
-
-	fb->pixel[1][0] = 0x6666;
-	fb->pixel[1][1] = 0x6606;
-	fb->pixel[1][2] = 0x6066;
-	fb->pixel[1][3] = 0x0666;
-	fb->pixel[1][4] = 0x6006;
-	fb->pixel[1][5] = 0x0066;
-	fb->pixel[1][6] = 0x0606;
-	fb->pixel[1][7] = 0x0006;
-
-	fb->pixel[0][0] = 0x6660;
-	fb->pixel[0][1] = 0x6600;
-	fb->pixel[0][2] = 0x6060;
-	fb->pixel[0][3] = 0x0660;
-	fb->pixel[0][4] = 0x6000;
-	fb->pixel[0][5] = 0x0060;
-	fb->pixel[0][6] = 0x0600;
-	fb->pixel[0][7] = 0x0000;
-
-
+	fb->pixel[seg_i->x][seg_i->y] = 0xF000;
 }
 
 int check_collision()
 {
-	struct segment_t *seg_i;
-
   // CHECK IF PATH GOES OFF SCREEN
 	if (path.head.x < 0 || path.head.x > 7 ||
 	    path.head.y < 0 || path.head.y > 7) {
+		fprintf(stderr, "Off the edge.\n");
 		return 1;
 	}
 	return 0;
@@ -369,18 +294,19 @@ int main(int argc, char* args[])
 	}
 
 	// Sets the file buffer contents (and thereby the 8 x 8 LED grid) to 0.
-	memset(fb, 0, 128);  // (128 is 8 * 8 * size_of char)
+	memset(fb, 0x0F00, 128);  // (128 is 8 * 8 * size_of char)
 
 	path.tail = &path.head;
 	reset();
 	while (running) {
 		while (poll(&evpoll, 1, 0) > 0)
 			handle_events(evpoll.fd);
-		if (check_collision(0)) {
+		if (check_collision()) {
+			fprintf(stderr, "calling reset.\n");
 			reset();
 		}
 		render();
-		usleep (300000);
+		usleep (200000);
 	}
 	memset(fb, 0, 128);
 	reset();
