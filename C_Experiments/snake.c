@@ -202,7 +202,11 @@ void reset(void)
 		seg_i=nextStep;
 	}
 	seg_i = NULL;
-	MsRedRidingHood = {NULL, NULL, rand() % 8, 0};
+	
+	MsRedRidingHood.next = NULL;
+	MsRedRidingHood.prev = NULL;
+	MsRedRidingHood.x = rand() % 8;
+	MsRedRidingHood.y = 0;
 	trailEnd = &MsRedRidingHood;
 
 	// trailEnd=seg_i;
@@ -329,7 +333,10 @@ int main(int argc, char* args[])
 		goto err_fb;
 	}
 
-	MsRedRidingHood = {NULL, NULL, rand() % 8, 0};
+	MsRedRidingHood.next = NULL;
+	MsRedRidingHood.prev = NULL;
+	MsRedRidingHood.x = rand() % 8;
+	MsRedRidingHood.y = 0;
 	trailEnd = &MsRedRidingHood;
 	reset();
 	while (running) {
