@@ -37,14 +37,9 @@ struct segment_t {
 };
 
 // trailEnd is actually the head of the LL, the path grows by adding to the front
-struct segment_t *trailEnd;    
+struct segment_t *trailEnd = NULL;    
 struct segment_t MsRedRidingHood;    
 
-// struct path_t {
-// 	struct segment_t head;
-// 	struct segment_t *tail;
-// 	enum direction_t heading;
-// };
 struct Point_t {
 	int x;
 	int y;
@@ -56,12 +51,6 @@ struct fb_t {
 
 
 int running = 1;
-
-// struct path_t path = {
-// 	{NULL, 4, 4},
-// 	NULL,
-// 	NONE,
-// };
 
 struct fb_t *fb;
 
@@ -149,7 +138,6 @@ static int open_fbdev(const char *dev_name)
 	return fd;
 }
 
-
 void render()
 {
 	// Set the file buffer contents (and thereby the whole 8 x 8 LED grid) to green.
@@ -162,7 +150,7 @@ void render()
 	fb->pixel[seg_i->x][seg_i->y] = 0xF000;
 }
 
-int check_collision()
+int edgeReached()
 {
   // CHECK IF PATH GOES OFF SCREEN
 	if (trailEnd->x < 0 || trailEnd->x > 7 ||
@@ -193,45 +181,27 @@ void reset(void)
 {
 	memset(fb, 0, 128); // turn all the lights off
 
-	struct segment_t *seg_i;
-	struct segment_t *nextStep;
-	seg_i=trailEnd;
-	while (seg_i->next) {
-		nextStep=seg_i->next;
-		fprintf(stderr, "Freeing memory for one segment.\n");
-		free(seg_i);
-		seg_i=nextStep;
+	if (trailEnd != NULL) {
+		// return all allocated memory
+		struct segment_t *seg_i;
+		struct segment_t *nextBrick;
+		seg_i=trailEnd;
+		while (seg_i->next) {
+			nextBrick=seg_i->next;
+			fprintf(stderr, "Freeing memory for one segment.\n");
+			free(seg_i);
+			seg_i=nextBrick;
+		}
+		seg_i = NULL;
 	}
-	seg_i = NULL;
-
+	// reset for next game
 	MsRedRidingHood.next = NULL;
 	MsRedRidingHood.prev = NULL;
 	MsRedRidingHood.x = rand() % 8;
 	MsRedRidingHood.y = 0;
 	trailEnd = &MsRedRidingHood;
-
-	// trailEnd=seg_i;
-	// trailEnd->next=NULL;
-	// trailEnd->prev=NULL;
-	// trailEnd->x=rand() % 8;
-	// trailEnd->y=0;
 }
 
-// void runAlongThePath() {
-// 	struct segment_t *seg_i;
-// 	struct segment_t *nextStep;
-// 	seg_i=trailEnd;
-// 	while (seg_i->next) {
-// 		fprintf(stderr, "path point: %d, %d\n", seg_i->x, seg_i->y);
-// 		nextStep=seg_i->next;
-// 		fb->pixel[seg_i->x][seg_i->y] = 0xF000;
-// 		usleep(300000);
-// 		fb->pixel[seg_i->x][seg_i->y] = 0xFFF0;
-// 		seg_i=nextStep;
-// 	}
-// 	usleep(3000000);   // wait 3 secs before next round
-// 	reset();
-// }
 
 
 void runAlongThePath() {
@@ -242,7 +212,7 @@ void runAlongThePath() {
 		fprintf(stderr, "path point: %d, %d\n", seg_i.x, seg_i.y);
 		nextStep=seg_i.prev;
 		fb->pixel[seg_i.x][seg_i.y] = 0xF000;
-		usleep(300000);
+		usleep(200000);  // .2 secs between steps
 		fb->pixel[seg_i.x][seg_i.y] = 0xFFF0;
 		seg_i=*nextStep;
 	}
@@ -331,20 +301,21 @@ int main(int argc, char* args[])
 		goto err_fb;
 	}
 
-	MsRedRidingHood.next = NULL;
-	MsRedRidingHood.prev = NULL;
-	MsRedRidingHood.x = rand() % 8;
-	MsRedRidingHood.y = 0;
-	trailEnd = &MsRedRidingHood;
+	// MsRedRidingHood.next = NULL;
+	// MsRedRidingHood.prev = NULL;
+	// MsRedRidingHood.x = rand() % 8;
+	// MsRedRidingHood.y = 0;
+	// trailEnd = &MsRedRidingHood;
 	reset();
 	while (running) {
 		while (poll(&evpoll, 1, 0) > 0)
 			handle_events(evpoll.fd);
-		if (check_collision()) {
-			// pop off the last added step
+		if (edgeReached()) {
+			// pop off the last added brick (it's off-screen)
 			trailEnd = trailEnd->next;
 			free(trailEnd->prev);
 			trailEnd->prev = NULL;
+
 			fprintf(stderr, "calling runAlongThePath.\n");
 			runAlongThePath();
 		}
