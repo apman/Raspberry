@@ -244,7 +244,7 @@ void runAlongThePath() {
 		fb->pixel[seg_i.x][seg_i.y] = 0xF000;
 		usleep(300000);
 		fb->pixel[seg_i.x][seg_i.y] = 0xFFF0;
-		seg_i=nextStep;
+		seg_i=*nextStep;
 	}
 	usleep(3000000);   // wait 3 secs before next round
 	reset();
