@@ -213,7 +213,7 @@ void runAlongThePath() {
 	struct segment_t *next_tail;
 	seg_i=trailEnd;
 	while (seg_i->next) {
-		fprintf(stderr, "path point: %d, %d\n" ,
+		fprintf(stderr, "path point: %d, %d\n", seg_i->x, seg_i->x);
 		next_tail=seg_i->next;
 		fb->pixel[seg_i->x][seg_i->y] = 0xFFF0;
 		usleep(300000);
@@ -306,7 +306,7 @@ int main(int argc, char* args[])
 		goto err_fb;
 	}
 
-	trailEnd = &path.head;
+	//trailEnd = &path.head;
 	reset();
 	while (running) {
 		while (poll(&evpoll, 1, 0) > 0)
