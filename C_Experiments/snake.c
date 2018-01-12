@@ -256,19 +256,15 @@ void change_dir(unsigned int code)
 {
 	switch (code) {
 		case KEY_UP:
-		  addToPath();
 			trailEnd->x--;
 			break;
 		case KEY_RIGHT:
-		  addToPath();
 			trailEnd->y++;
 			break;
 		case KEY_DOWN:
-		  addToPath();
 			trailEnd->x++;
 			break;
 		case KEY_LEFT:
-		  addToPath();
 			trailEnd->y--;
 			break;
 	}
@@ -294,8 +290,9 @@ void handle_events(int evfd)
 			running = 0;  // stop the game 
 			break;
 		default:
-		change_dir(ev->code);
-		fprintf(stderr, "code = %d\n", ev->code);  
+			addToPath();
+			change_dir(ev->code);
+			fprintf(stderr, "code = %d\n", ev->code);  
 	}
 }
 
@@ -344,6 +341,8 @@ int main(int argc, char* args[])
 		while (poll(&evpoll, 1, 0) > 0)
 			handle_events(evpoll.fd);
 		if (check_collision()) {
+			// pop off the last added step
+			trailEnd = trailEnd->next;
 			fprintf(stderr, "calling runAlongThePath.\n");
 			runAlongThePath();
 		}
