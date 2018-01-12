@@ -158,6 +158,7 @@ static int open_fbdev(const char *dev_name)
 // 0xFF00 yellow
 void render()
 {
+	// Set the file buffer contents (and thereby the whole 8 x 8 LED grid) to green.
 	memset(fb, 0x0F00, 128);
 
 	struct segment_t *seg_i;
@@ -191,10 +192,21 @@ void addToPath() {
 		new_tail->y=path.tail->y;
 		new_tail->next=path.tail;
 		path.tail = new_tail;	
-		
 }
 
-
+void runAlongThePath() {
+	struct segment_t *seg_i;
+	struct segment_t *next_tail;
+	seg_i=path.tail;
+	while (seg_i->next) {
+		next_tail=seg_i->next;
+		fb->pixel[seg_i->x][seg_i->y] = 0xFFF0;
+		usleep(300000);
+		fb->pixel[seg_i->x][seg_i->y] = 0xFFFF;
+		seg_i=next_tail;
+	}
+	reset();
+}
 
 void reset(void)
 {
@@ -295,9 +307,6 @@ int main(int argc, char* args[])
 		goto err_fb;
 	}
 
-	// Sets the file buffer contents (and thereby the whole 8 x 8 LED grid) to green.
-	//memset(fb, 0x0F00, 128);  // (128 is 8 * 8 * size_of char) 
-
 	path.tail = &path.head;
 	reset();
 	while (running) {
@@ -305,12 +314,13 @@ int main(int argc, char* args[])
 			handle_events(evpoll.fd);
 		if (check_collision()) {
 			fprintf(stderr, "calling reset.\n");
-			reset();
+			runAlongThePath();
 		}
 		render();
 		usleep (200000);
 	}
 	reset();
+	memset(fb, 0, 128); // turn all the lights off
 	munmap(fb, 128);
 err_fb:
 	close(fbfd);
