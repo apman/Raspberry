@@ -31,12 +31,14 @@ enum direction_t{
 };
 struct segment_t {
 	struct segment_t *next;
+	struct segment_t *prev;
 	int x;
 	int y;
 };
 
 // trailEnd is actually the head of the LL, the path grows by adding to the front
 struct segment_t *trailEnd;    
+struct segment_t MsRedRidingHood;    
 
 // struct path_t {
 // 	struct segment_t head;
@@ -60,10 +62,6 @@ int running = 1;
 // 	NULL,
 // 	NONE,
 // };
-
-struct Point_t MsRedRidingHood = {
-	4, 4,
-};
 
 struct fb_t *fb;
 
@@ -195,33 +193,58 @@ void reset(void)
 	memset(fb, 0, 128); // turn all the lights off
 
 	struct segment_t *seg_i;
-	struct segment_t *next_tail;
+	struct segment_t *nextStep;
 	seg_i=trailEnd;
 	while (seg_i->next) {
-		next_tail=seg_i->next;
+		nextStep=seg_i->next;
+		fprintf(stderr, "Freeing memory for one segment.\n");
 		free(seg_i);
-		seg_i=next_tail;
+		seg_i=nextStep;
 	}
-	trailEnd=seg_i;
-	trailEnd->next=NULL;
-	trailEnd->x=rand() % 8;
-	trailEnd->y=0;
+	seg_i = NULL;
+	MsRedRidingHood = {NULL, NULL, rand() % 8, 0};
+	trailEnd = &MsRedRidingHood;
+
+	// trailEnd=seg_i;
+	// trailEnd->next=NULL;
+	// trailEnd->prev=NULL;
+	// trailEnd->x=rand() % 8;
+	// trailEnd->y=0;
 }
 
+// void runAlongThePath() {
+// 	struct segment_t *seg_i;
+// 	struct segment_t *nextStep;
+// 	seg_i=trailEnd;
+// 	while (seg_i->next) {
+// 		fprintf(stderr, "path point: %d, %d\n", seg_i->x, seg_i->y);
+// 		nextStep=seg_i->next;
+// 		fb->pixel[seg_i->x][seg_i->y] = 0xF000;
+// 		usleep(300000);
+// 		fb->pixel[seg_i->x][seg_i->y] = 0xFFF0;
+// 		seg_i=nextStep;
+// 	}
+// 	usleep(3000000);   // wait 3 secs before next round
+// 	reset();
+// }
+
+
 void runAlongThePath() {
-	struct segment_t *seg_i;
-	struct segment_t *next_tail;
-	seg_i=trailEnd;
-	while (seg_i->next) {
+	struct segment_t seg_i;
+	struct segment_t *nextStep;
+	seg_i=MsRedRidingHood;
+	while (seg_i.prev) {
 		fprintf(stderr, "path point: %d, %d\n", seg_i->x, seg_i->y);
-		next_tail=seg_i->next;
+		nextStep=seg_i.prev;
 		fb->pixel[seg_i->x][seg_i->y] = 0xF000;
 		usleep(300000);
 		fb->pixel[seg_i->x][seg_i->y] = 0xFFF0;
-		seg_i=next_tail;
+		seg_i=nextStep;
 	}
+	usleep(3000000);   // wait 3 secs before next round
 	reset();
 }
+
 
 
 void change_dir(unsigned int code)
@@ -306,8 +329,8 @@ int main(int argc, char* args[])
 		goto err_fb;
 	}
 
-	struct segment_t seg = {NULL, 0, 0};
-	trailEnd = &seg;
+	MsRedRidingHood = {NULL, NULL, rand() % 8, 0};
+	trailEnd = &MsRedRidingHood;
 	reset();
 	while (running) {
 		while (poll(&evpoll, 1, 0) > 0)
