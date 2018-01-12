@@ -179,7 +179,7 @@ void addToPath() {
 
 void reset(void)
 {
-	//memset(fb, 0, 128); // turn all the lights off
+	memset(fb, 0x0F00, 128); // turn all the lights off
 
 	if (trailEnd != NULL) {
 		// return all allocated memory
