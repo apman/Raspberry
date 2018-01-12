@@ -168,8 +168,8 @@ void render()
 int check_collision()
 {
   // CHECK IF PATH GOES OFF SCREEN
-	if (path.tail.x < 0 || path.tail.x > 7 ||
-	    path.tail.y < 0 || path.tail.y > 7) {
+	if (path.tail->x < 0 || path.tail->x > 7 ||
+	    path.tail->y < 0 || path.tail->y > 7) {
 		fprintf(stderr, "Off the edge.\n");
 		return 1;
 	}
