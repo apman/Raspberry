@@ -140,10 +140,11 @@ static int open_fbdev(const char *dev_name)
 
 void render()
 {
+	struct segment_t *seg_i;
+
 	// Set the file buffer contents (and thereby the whole 8 x 8 LED grid) to green.
 	memset(fb, 0x0F00, 128);
 
-	struct segment_t *seg_i;
 	for(seg_i = trailEnd; seg_i->next; seg_i=seg_i->next) {
 		fb->pixel[seg_i->x][seg_i->y] = 0xFF00;
 	}
@@ -320,7 +321,7 @@ int main(int argc, char* args[])
 		usleep (200000);  // wait between polls 
 											// (too low makes lights flicker, too high feels unresponsive -> ~ .2secs is good)
 	}
-	memset(fb, 0, 128); // turn all the lights off
+	memset(fb, 0x0F00, 128); // turn all the lights off
 	reset();
 	munmap(fb, 128);
 err_fb:
