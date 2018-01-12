@@ -1,4 +1,4 @@
-snake : red.c
+red : red.c
 
 clean:
 	rm red
