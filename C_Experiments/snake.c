@@ -145,7 +145,7 @@ void render()
 
 	struct segment_t *seg_i;
 	for(seg_i = trailEnd; seg_i->next; seg_i=seg_i->next) {
-		fb->pixel[seg_i->x][seg_i->y] = 0xFFF0;
+		fb->pixel[seg_i->x][seg_i->y] = 0xFF00;
 	}
 	fb->pixel[seg_i->x][seg_i->y] = 0xF000;
 }
@@ -301,11 +301,6 @@ int main(int argc, char* args[])
 		goto err_fb;
 	}
 
-	// MsRedRidingHood.next = NULL;
-	// MsRedRidingHood.prev = NULL;
-	// MsRedRidingHood.x = rand() % 8;
-	// MsRedRidingHood.y = 0;
-	// trailEnd = &MsRedRidingHood;
 	reset();
 	while (running) {
 		while (poll(&evpoll, 1, 0) > 0)
@@ -320,7 +315,7 @@ int main(int argc, char* args[])
 			runAlongThePath();
 		}
 		render();
-		usleep (200000);
+		//usleep (200000);
 	}
 	reset();
 	munmap(fb, 128);
