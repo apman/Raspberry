@@ -56,6 +56,7 @@ struct path_t path = {
 	NULL,
 	NONE,
 };
+
 struct Point_t MsRedRidingHood = {
 	4, 4,
 };
@@ -146,16 +147,7 @@ static int open_fbdev(const char *dev_name)
 	return fd;
 }
 
-// 0xFFFF rgb white 
-// 0xFF0F rgb light yellow 
-// 0x00F0 r_b fuchsia
-// 0xF00F r_b fuchsia
-// 0x0F0F _gb
-// 0x0FFF _gb light 
-// 0x0F00 _g_ green
-// 0xF800 r__ 
-// 0x8800 r__
-// 0xFF00 yellow
+
 void render()
 {
 	// Set the file buffer contents (and thereby the whole 8 x 8 LED grid) to green.
@@ -184,7 +176,7 @@ void addToPath() {
 
 		new_tail = malloc(sizeof(struct segment_t));
 		if (!new_tail) {
-			fprintf(stderr, "Ran out of memory.\n");
+			fprintf(stderr, "Sorry, ran out of memory.\n");
 			running = 0;
 			return;
 		}
@@ -196,6 +188,8 @@ void addToPath() {
 
 void reset(void)
 {
+	memset(fb, 0, 128); // turn all the lights off
+
 	struct segment_t *seg_i;
 	struct segment_t *next_tail;
 	seg_i=path.tail;
@@ -208,7 +202,6 @@ void reset(void)
 	path.tail->next=NULL;
 	path.tail->x=rand() % 8;
 	path.tail->y=0;
-	// path.heading = NONE;
 }
 
 void runAlongThePath() {
@@ -216,6 +209,7 @@ void runAlongThePath() {
 	struct segment_t *next_tail;
 	seg_i=path.tail;
 	while (seg_i->next) {
+		fprintf(stderr, "path point: %d, %d\n" ,
 		next_tail=seg_i->next;
 		fb->pixel[seg_i->x][seg_i->y] = 0xFFF0;
 		usleep(300000);
@@ -314,14 +308,13 @@ int main(int argc, char* args[])
 		while (poll(&evpoll, 1, 0) > 0)
 			handle_events(evpoll.fd);
 		if (check_collision()) {
-			fprintf(stderr, "calling reset.\n");
+			fprintf(stderr, "calling runAlongThePath.\n");
 			runAlongThePath();
 		}
 		render();
 		usleep (200000);
 	}
 	reset();
-	memset(fb, 0, 128); // turn all the lights off
 	munmap(fb, 128);
 err_fb:
 	close(fbfd);
