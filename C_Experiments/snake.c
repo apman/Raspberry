@@ -34,11 +34,15 @@ struct segment_t {
 	int x;
 	int y;
 };
-struct path_t {
-	struct segment_t head;
-	struct segment_t *tail;
-	enum direction_t heading;
-};
+
+// trailEnd is actually the head of the LL, the path grows by adding to the front
+struct segment_t *trailEnd;    
+
+// struct path_t {
+// 	struct segment_t head;
+// 	struct segment_t *tail;
+// 	enum direction_t heading;
+// };
 struct Point_t {
 	int x;
 	int y;
@@ -51,11 +55,11 @@ struct fb_t {
 
 int running = 1;
 
-struct path_t path = {
-	{NULL, 4, 4},
-	NULL,
-	NONE,
-};
+// struct path_t path = {
+// 	{NULL, 4, 4},
+// 	NULL,
+// 	NONE,
+// };
 
 struct Point_t MsRedRidingHood = {
 	4, 4,
@@ -154,7 +158,7 @@ void render()
 	memset(fb, 0x0F00, 128);
 
 	struct segment_t *seg_i;
-	for(seg_i = path.tail; seg_i->next; seg_i=seg_i->next) {
+	for(seg_i = trailEnd; seg_i->next; seg_i=seg_i->next) {
 		fb->pixel[seg_i->x][seg_i->y] = 0xFFF0;
 	}
 	fb->pixel[seg_i->x][seg_i->y] = 0xF000;
@@ -163,8 +167,8 @@ void render()
 int check_collision()
 {
   // CHECK IF PATH GOES OFF SCREEN
-	if (path.tail->x < 0 || path.tail->x > 7 ||
-	    path.tail->y < 0 || path.tail->y > 7) {
+	if (trailEnd->x < 0 || trailEnd->x > 7 ||
+	    trailEnd->y < 0 || trailEnd->y > 7) {
 		fprintf(stderr, "Off the edge.\n");
 		return 1;
 	}
@@ -172,18 +176,18 @@ int check_collision()
 }
 
 void addToPath() {
-		struct segment_t * new_tail;
+		struct segment_t * nextStep;
 
-		new_tail = malloc(sizeof(struct segment_t));
-		if (!new_tail) {
+		nextStep = malloc(sizeof(struct segment_t));
+		if (!nextStep) {
 			fprintf(stderr, "Sorry, ran out of memory.\n");
 			running = 0;
 			return;
 		}
-		new_tail->x=path.tail->x;
-		new_tail->y=path.tail->y;
-		new_tail->next=path.tail;
-		path.tail = new_tail;	
+		nextStep->x=trailEnd->x;
+		nextStep->y=trailEnd->y;
+		nextStep->next=trailEnd;
+		trailEnd = nextStep;	    
 }
 
 void reset(void)
@@ -192,22 +196,22 @@ void reset(void)
 
 	struct segment_t *seg_i;
 	struct segment_t *next_tail;
-	seg_i=path.tail;
+	seg_i=trailEnd;
 	while (seg_i->next) {
 		next_tail=seg_i->next;
 		free(seg_i);
 		seg_i=next_tail;
 	}
-	path.tail=seg_i;
-	path.tail->next=NULL;
-	path.tail->x=rand() % 8;
-	path.tail->y=0;
+	trailEnd=seg_i;
+	trailEnd->next=NULL;
+	trailEnd->x=rand() % 8;
+	trailEnd->y=0;
 }
 
 void runAlongThePath() {
 	struct segment_t *seg_i;
 	struct segment_t *next_tail;
-	seg_i=path.tail;
+	seg_i=trailEnd;
 	while (seg_i->next) {
 		fprintf(stderr, "path point: %d, %d\n" ,
 		next_tail=seg_i->next;
@@ -225,19 +229,19 @@ void change_dir(unsigned int code)
 	switch (code) {
 		case KEY_UP:
 		  addToPath();
-			path.tail->x--;
+			trailEnd->x--;
 			break;
 		case KEY_RIGHT:
 		  addToPath();
-			path.tail->y++;
+			trailEnd->y++;
 			break;
 		case KEY_DOWN:
 		  addToPath();
-			path.tail->x++;
+			trailEnd->x++;
 			break;
 		case KEY_LEFT:
 		  addToPath();
-			path.tail->y--;
+			trailEnd->y--;
 			break;
 	}
 }
@@ -302,7 +306,7 @@ int main(int argc, char* args[])
 		goto err_fb;
 	}
 
-	path.tail = &path.head;
+	trailEnd = &path.head;
 	reset();
 	while (running) {
 		while (poll(&evpoll, 1, 0) > 0)
