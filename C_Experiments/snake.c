@@ -146,12 +146,15 @@ static int open_fbdev(const char *dev_name)
 	return fd;
 }
 
-// 0x00F0 fuchsia
-// 0xF00F fuchsia
-// 0x0F0F green-blue
-// 0x0F00 green
-// 0xF800 red 
-// 0x8800 red
+// 0xFFFF rgb white 
+// 0xFF0F rgb light yellow 
+// 0x00F0 r_b fuchsia
+// 0xF00F r_b fuchsia
+// 0x0F0F _gb
+// 0x0FFF _gb light 
+// 0x0F00 _g_ green
+// 0xF800 r__ 
+// 0x8800 r__
 // 0xFF00 yellow
 void render()
 {
@@ -161,7 +164,78 @@ void render()
 		fb->pixel[seg_i->x][seg_i->y] = 0x0FFF;
 	}
 	fb->pixel[seg_i->x][seg_i->y] = 0xFF0F;
-	fb->pixel[5][5] = 0xFFFF;
+	fb->pixel[7][0] = 0xFFFF;
+	fb->pixel[7][1] = 0xFFF0;
+	fb->pixel[7][2] = 0xFF0F;
+	fb->pixel[7][3] = 0xF0FF;
+	fb->pixel[7][4] = 0xFF00;
+	fb->pixel[7][5] = 0xF00F;
+	fb->pixel[7][6] = 0xF0F0;
+	fb->pixel[7][7] = 0xF000;
+
+	fb->pixel[6][0] = 0x0FFF;
+	fb->pixel[6][1] = 0x0FF0;
+	fb->pixel[6][2] = 0x0F0F;
+	fb->pixel[6][3] = 0x00FF;
+	fb->pixel[6][4] = 0x0F00;
+	fb->pixel[6][5] = 0x000F;
+	fb->pixel[6][6] = 0x00F0;
+	fb->pixel[6][7] = 0x0000;
+
+	fb->pixel[5][0] = 0xFFFF;
+	fb->pixel[5][1] = 0xFFF0;
+	fb->pixel[5][2] = 0xFF0F;
+	fb->pixel[5][3] = 0x0FFF;
+	fb->pixel[5][4] = 0xFF00;
+	fb->pixel[5][5] = 0x0F0F;
+	fb->pixel[5][6] = 0x0FF0;
+	fb->pixel[5][7] = 0x0F00;
+
+	fb->pixel[4][0] = 0xF0FF;
+	fb->pixel[4][1] = 0xF0F0;
+	fb->pixel[4][2] = 0xF00F;
+	fb->pixel[4][3] = 0x00FF;
+	fb->pixel[4][4] = 0xF000;
+	fb->pixel[4][5] = 0x000F;
+	fb->pixel[4][6] = 0x00F0;
+	fb->pixel[4][7] = 0x0000;
+
+	fb->pixel[3][0] = 0xFFFF;
+	fb->pixel[3][1] = 0xFFF0;
+	fb->pixel[3][2] = 0xF0FF;
+	fb->pixel[3][3] = 0x0FFF;
+	fb->pixel[3][4] = 0xF0F0;
+	fb->pixel[3][5] = 0x00FF;
+	fb->pixel[3][6] = 0x0FF0;
+	fb->pixel[3][7] = 0x00F0;
+
+	fb->pixel[2][0] = 0xFF0F;
+	fb->pixel[2][1] = 0xFF00;
+	fb->pixel[2][2] = 0xF00F;
+	fb->pixel[2][3] = 0x0F0F;
+	fb->pixel[2][4] = 0xF000;
+	fb->pixel[2][5] = 0x000F;
+	fb->pixel[2][6] = 0x0F00;
+	fb->pixel[2][7] = 0x0000;
+
+	fb->pixel[1][0] = 0xFFFF;
+	fb->pixel[1][1] = 0xFF0F;
+	fb->pixel[1][2] = 0xF0FF;
+	fb->pixel[1][3] = 0x0FFF;
+	fb->pixel[1][4] = 0xF00F;
+	fb->pixel[1][5] = 0x00FF;
+	fb->pixel[1][6] = 0x0F0F;
+	fb->pixel[1][7] = 0x000F;
+
+	fb->pixel[0][0] = 0xFFF0;
+	fb->pixel[0][1] = 0xFF00;
+	fb->pixel[0][2] = 0xF0F0;
+	fb->pixel[0][3] = 0x0FF0;
+	fb->pixel[0][4] = 0xF000;
+	fb->pixel[0][5] = 0x00F0;
+	fb->pixel[0][6] = 0x0F00;
+	fb->pixel[0][7] = 0x0000;
+
 }
 
 int check_collision()
