@@ -179,7 +179,7 @@ void addToPath() {
 
 void reset(void)
 {
-	memset(fb, 0, 128); // turn all the lights off
+	//memset(fb, 0, 128); // turn all the lights off
 
 	if (trailEnd != NULL) {
 		// return all allocated memory
@@ -211,9 +211,9 @@ void runAlongThePath() {
 	while (seg_i.prev) {
 		fprintf(stderr, "path point: %d, %d\n", seg_i.x, seg_i.y);
 		nextStep=seg_i.prev;
-		fb->pixel[seg_i.x][seg_i.y] = 0xF000;
+		fb->pixel[seg_i.x][seg_i.y] = 0xF000;  
 		usleep(200000);  // .2 secs between steps
-		fb->pixel[seg_i.x][seg_i.y] = 0xFFF0;
+		fb->pixel[seg_i.x][seg_i.y] = 0xFF00;
 		seg_i=*nextStep;
 	}
 	usleep(3000000);   // wait 3 secs before next round
@@ -315,8 +315,10 @@ int main(int argc, char* args[])
 			runAlongThePath();
 		}
 		render();
-		//usleep (200000);
+		usleep (200000);  // wait between polls 
+											// (too low makes lights flicker, too high feels unresponsive -> ~ .2secs is good)
 	}
+	memset(fb, 0, 128); // turn all the lights off
 	reset();
 	munmap(fb, 128);
 err_fb:
