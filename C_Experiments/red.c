@@ -302,7 +302,7 @@ int main(int argc, char* args[])
 		goto err_fb;
 	}
 
-	memset(fb, 0x0F0 , 128); // turn all the lights off
+	//memset(fb, 0x0F0 , 128); // turn all the lights off
 
 	reset();
 	while (running) {
