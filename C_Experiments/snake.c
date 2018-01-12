@@ -174,7 +174,7 @@ int check_collision()
 }
 
 void addToPath() {
-		struct segment_t * nextStep;
+		struct segment_t *nextStep;
 
 		nextStep = malloc(sizeof(struct segment_t));
 		if (!nextStep) {
@@ -185,6 +185,7 @@ void addToPath() {
 		nextStep->x=trailEnd->x;
 		nextStep->y=trailEnd->y;
 		nextStep->next=trailEnd;
+		trailEnd->prev=nextStep;
 		trailEnd = nextStep;	    
 }
 
@@ -202,7 +203,7 @@ void reset(void)
 		seg_i=nextStep;
 	}
 	seg_i = NULL;
-	
+
 	MsRedRidingHood.next = NULL;
 	MsRedRidingHood.prev = NULL;
 	MsRedRidingHood.x = rand() % 8;
@@ -238,11 +239,11 @@ void runAlongThePath() {
 	struct segment_t *nextStep;
 	seg_i=MsRedRidingHood;
 	while (seg_i.prev) {
-		fprintf(stderr, "path point: %d, %d\n", seg_i->x, seg_i->y);
+		fprintf(stderr, "path point: %d, %d\n", seg_i.x, seg_i.y);
 		nextStep=seg_i.prev;
-		fb->pixel[seg_i->x][seg_i->y] = 0xF000;
+		fb->pixel[seg_i.x][seg_i.y] = 0xF000;
 		usleep(300000);
-		fb->pixel[seg_i->x][seg_i->y] = 0xFFF0;
+		fb->pixel[seg_i.x][seg_i.y] = 0xFFF0;
 		seg_i=nextStep;
 	}
 	usleep(3000000);   // wait 3 secs before next round
