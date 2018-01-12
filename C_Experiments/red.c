@@ -145,12 +145,11 @@ void render()
 	// Set the file buffer contents (and thereby the whole 8 x 8 LED grid) to green.
 	memset(fb, 0x003, 128);  // 
 
-	// draw the path
+	// draw the yellow brick path
 	for(seg_i = trailEnd; seg_i->next; seg_i=seg_i->next) {
 		fb->pixel[seg_i->x][seg_i->y] = 0xFF00;
 	}
 	// draw Little Red RidingHood
-	//fb->pixel[seg_i->x][seg_i->y] = 0xF000;
 	fb->pixel[MsRedRidingHood.x][MsRedRidingHood.y] = 0xF000;
 }
 
@@ -211,6 +210,8 @@ void reset(void)
 void runAlongThePath() {
 	struct segment_t seg_i;
 	struct segment_t *nextStep;
+
+	// loop backwards through the linked list to let Little Red RidingHood follow the path
 	seg_i=MsRedRidingHood;
 	while (seg_i.prev) {
 		fprintf(stderr, "path point: %d, %d\n", seg_i.x, seg_i.y);
@@ -225,8 +226,7 @@ void runAlongThePath() {
 }
 
 
-
-void change_dir(unsigned int code)
+void positionNewBrick(unsigned int code)
 {
 	switch (code) {
 		case KEY_UP:
@@ -265,7 +265,7 @@ void handle_events(int evfd)
 			break;
 		default:
 			addToPath();
-			change_dir(ev->code);
+			positionNewBrick(ev->code);
 			fprintf(stderr, "code = %d\n", ev->code);  
 	}
 }
