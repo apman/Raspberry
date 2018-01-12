@@ -301,6 +301,8 @@ int main(int argc, char* args[])
 		goto err_fb;
 	}
 
+	memset(fb, 0xFFF0 , 128); // turn all the lights off
+
 	reset();
 	while (running) {
 		while (poll(&evpoll, 1, 0) > 0)
