@@ -158,6 +158,8 @@ static int open_fbdev(const char *dev_name)
 // 0xFF00 yellow
 void render()
 {
+	memset(fb, 0x0F00, 128);
+
 	struct segment_t *seg_i;
 	for(seg_i = path.tail; seg_i->next; seg_i=seg_i->next) {
 		fb->pixel[seg_i->x][seg_i->y] = 0xFFF0;
@@ -293,8 +295,8 @@ int main(int argc, char* args[])
 		goto err_fb;
 	}
 
-	// Sets the file buffer contents (and thereby the 8 x 8 LED grid) to 0.
-	memset(fb, 0x0F00, 128);  // (128 is 8 * 8 * size_of char)
+	// Sets the file buffer contents (and thereby the whole 8 x 8 LED grid) to green.
+	//memset(fb, 0x0F00, 128);  // (128 is 8 * 8 * size_of char) 
 
 	path.tail = &path.head;
 	reset();
@@ -308,7 +310,6 @@ int main(int argc, char* args[])
 		render();
 		usleep (200000);
 	}
-	memset(fb, 0, 128);
 	reset();
 	munmap(fb, 128);
 err_fb:
