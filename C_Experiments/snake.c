@@ -161,7 +161,7 @@ void render()
 		fb->pixel[seg_i->x][seg_i->y] = 0x0FFF;
 	}
 	fb->pixel[seg_i->x][seg_i->y] = 0xFF0F;
-	fb->pixel[5->x][5->y] = 0xFFFF;
+	fb->pixel[5][5] = 0xFFFF;
 }
 
 int check_collision()
