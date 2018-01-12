@@ -306,7 +306,8 @@ int main(int argc, char* args[])
 		goto err_fb;
 	}
 
-	trailEnd = {NULL, 0, 0};
+	struct segment_t seg = {NULL, 0, 0};
+	trailEnd = &seg;
 	reset();
 	while (running) {
 		while (poll(&evpoll, 1, 0) > 0)
