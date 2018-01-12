@@ -143,18 +143,20 @@ void render()
 	struct segment_t *seg_i;
 
 	// Set the file buffer contents (and thereby the whole 8 x 8 LED grid) to green.
-	//memset(fb, 0x00F, 128);  // blue-green
 	memset(fb, 0x003, 128);  // 
 
+	// draw the path
 	for(seg_i = trailEnd; seg_i->next; seg_i=seg_i->next) {
 		fb->pixel[seg_i->x][seg_i->y] = 0xFF00;
 	}
-	fb->pixel[seg_i->x][seg_i->y] = 0xF000;
+	// draw Little Red RidingHood
+	//fb->pixel[seg_i->x][seg_i->y] = 0xF000;
+	fb->pixel[MsRedRidingHood.x][MsRedRidingHood.y] = 0xF000;
 }
 
 int edgeReached()
 {
-  // CHECK IF PATH GOES OFF SCREEN
+  // check if the path has gone off screen
 	if (trailEnd->x < 0 || trailEnd->x > 7 ||
 	    trailEnd->y < 0 || trailEnd->y > 7) {
 		fprintf(stderr, "Off the edge.\n");
@@ -166,12 +168,14 @@ int edgeReached()
 void addToPath() {
 		struct segment_t *nextStep;
 
+		// get the memory for a new path segment
 		nextStep = malloc(sizeof(struct segment_t));
 		if (!nextStep) {
 			fprintf(stderr, "Sorry, ran out of memory.\n");
 			running = 0;
 			return;
 		}
+		// tag it to the end of the path (= beginning of linked list)
 		nextStep->x=trailEnd->x;
 		nextStep->y=trailEnd->y;
 		nextStep->next=trailEnd;
@@ -181,8 +185,8 @@ void addToPath() {
 
 void reset(void)
 {
+	// if this is not the first game, return all allocated memory from previous path
 	if (trailEnd != NULL) {
-		// return all allocated memory
 		struct segment_t *seg_i;
 		struct segment_t *nextBrick;
 		seg_i=trailEnd;
@@ -194,7 +198,7 @@ void reset(void)
 		}
 		seg_i = NULL;
 	}
-	// reset for next game
+	// setup for next game
 	MsRedRidingHood.next = NULL;
 	MsRedRidingHood.prev = NULL;
 	MsRedRidingHood.x = rand() % 8;
