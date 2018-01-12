@@ -194,20 +194,6 @@ void addToPath() {
 		path.tail = new_tail;	
 }
 
-void runAlongThePath() {
-	struct segment_t *seg_i;
-	struct segment_t *next_tail;
-	seg_i=path.tail;
-	while (seg_i->next) {
-		next_tail=seg_i->next;
-		fb->pixel[seg_i->x][seg_i->y] = 0xFFF0;
-		usleep(300000);
-		fb->pixel[seg_i->x][seg_i->y] = 0xFFFF;
-		seg_i=next_tail;
-	}
-	reset();
-}
-
 void reset(void)
 {
 	struct segment_t *seg_i;
@@ -224,6 +210,21 @@ void reset(void)
 	path.tail->y=0;
 	// path.heading = NONE;
 }
+
+void runAlongThePath() {
+	struct segment_t *seg_i;
+	struct segment_t *next_tail;
+	seg_i=path.tail;
+	while (seg_i->next) {
+		next_tail=seg_i->next;
+		fb->pixel[seg_i->x][seg_i->y] = 0xFFF0;
+		usleep(300000);
+		fb->pixel[seg_i->x][seg_i->y] = 0xFFFF;
+		seg_i=next_tail;
+	}
+	reset();
+}
+
 
 void change_dir(unsigned int code)
 {
