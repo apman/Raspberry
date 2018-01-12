@@ -18,8 +18,9 @@
 #include <string.h>
 
 #include <linux/input.h>
-   
 
+
+// LED matrix row & col numbering starts in opposite corner of the joy-stick with 0
 
 enum direction_t{
 	UP,
@@ -146,6 +147,8 @@ static int open_fbdev(const char *dev_name)
 }
 
 // 0x00F0 fuchsia
+// 0xF00F fuchsia
+// 0x0F0F green-blue
 // 0x0F00 green
 // 0xF800 red 
 // 0x8800 red
@@ -155,9 +158,9 @@ void render()
 	struct segment_t *seg_i;
 	// memset(fb, 0x00F0, 128);		// fill bg colour
 	for(seg_i = path.tail; seg_i->next; seg_i=seg_i->next) {
-		fb->pixel[seg_i->x][seg_i->y] = 0x0F0F;
+		fb->pixel[seg_i->x][seg_i->y] = 0x0FFF;
 	}
-	fb->pixel[seg_i->x][seg_i->y] = 0xF00F;
+	fb->pixel[seg_i->x][seg_i->y] = 0xFF0F;
 }
 
 int check_collision()
