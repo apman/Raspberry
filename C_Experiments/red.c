@@ -143,7 +143,7 @@ void render()
 	struct segment_t *seg_i;
 
 	// Set the file buffer contents (and thereby the whole 8 x 8 LED grid) to green.
-	memset(fb, 0x0F0, 128);
+	memset(fb, 0xF00, 128);
 
 	for(seg_i = trailEnd; seg_i->next; seg_i=seg_i->next) {
 		fb->pixel[seg_i->x][seg_i->y] = 0xFF00;
@@ -180,8 +180,6 @@ void addToPath() {
 
 void reset(void)
 {
-	//memset(fb, 0x0F00, 128); // turn all the lights off
-
 	if (trailEnd != NULL) {
 		// return all allocated memory
 		struct segment_t *seg_i;
@@ -301,8 +299,6 @@ int main(int argc, char* args[])
 		printf("Failed to mmap.\n");
 		goto err_fb;
 	}
-
-	//memset(fb, 0x0F0 , 128); // turn all the lights off
 
 	reset();
 	while (running) {
