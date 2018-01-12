@@ -144,7 +144,7 @@ void render()
 
 	// Set the file buffer contents (and thereby the whole 8 x 8 LED grid) to green.
 	//memset(fb, 0x00F, 128);  // blue-green
-	memset(fb, 0x0FF, 128);  // 
+	memset(fb, 0x008, 128);  // 
 
 	for(seg_i = trailEnd; seg_i->next; seg_i=seg_i->next) {
 		fb->pixel[seg_i->x][seg_i->y] = 0xFF00;
