@@ -1,5 +1,7 @@
 # Raspberry
-Experiments with Raspberry Pi ...
+Experiments with Raspberry Pi ... (& practicing linked lists)
+
+---------------
 
 The littleMsRidingHood folder contains a little game: 
 
@@ -12,10 +14,11 @@ The littleMsRidingHood folder contains a little game:
    that come with the SenseHat (the compoent with the LED matrix & joy-stick (plus some 
    sensors not used in this game).
 
+   @author of the adaptations: Anna Malchow-Perryman (https://github.com/apman/Raspberry)  
+
    To run the game you need a Raspberry Pi connecte to a SenseHat component. 
    Then simmply switch to the littleMsRidingHood folder:
 
    $ make
    $ ./red
 
-   @author of the adaptations: Anna Malchow-Perryman (https://github.com/apman/Raspberry)  
